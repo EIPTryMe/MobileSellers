@@ -13,8 +13,8 @@ class Auth0User {
   bool webLogged = false;
 }
 
-class Company {
-  Company({this.id, this.name, this.email, this.phoneNumber, this.address, this.siret, this.siren});
+class Renter {
+  Renter({this.id, this.name, this.email, this.phoneNumber, this.address, this.siret, this.siren});
 
   int id;
   String name;
@@ -40,23 +40,17 @@ class Product {
   List pictures;
 }
 
-Auth0User auth0User = Auth0User();
-Company company = Company();
-
-class Renter {
-  Renter({this.id, this.name, this.email, this.phoneNumber, this.address, this.siret, this.siren});
+class Order {
+  Order({this.id, this.total, this.status, this.products});
 
   int id;
-  String name;
-  String email;
-  String phoneNumber;
-  String address;
-  String siret;
-  String siren;
+  double total;
+  String status;
+  List<Product> products;
 }
 
+Auth0User auth0User = Auth0User();
 
 Renter renter = Renter();
-
 
 GraphQLConfiguration graphQLConfiguration = GraphQLConfiguration();

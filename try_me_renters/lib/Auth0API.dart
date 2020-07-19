@@ -10,7 +10,7 @@ class Auth0API {
 
   static Future<bool> login(String email, String password) async {
     global.auth0User = global.Auth0User();
-    global.company = global.Company();
+    global.renter = global.Renter();
     try {
       var response = await auth0.auth.passwordRealm({'username': email, 'password': password, 'realm': 'Username-Password-Authentication'});
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:trymerenters/widgets/ListProducts.dart';
+import 'package:trymerenters/widgets/Orders.dart';
 import 'package:trymerenters/widgets/RenterInformation.dart';
 
 class HomeView extends StatefulWidget {
@@ -10,15 +11,11 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static List<Widget> _widgetOptions = <Widget>[
     ListProducts(),
-    Text(
-      'Index 1: Business',
-      style: optionStyle,
-    ),
-   RenterInformation(),
+    Orders(),
+    RenterInformation(),
   ];
 
   void _onItemTapped(int index) {

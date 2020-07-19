@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:trymerenters/widgets/RenterInformation.dart';
+
 class HomeView extends StatefulWidget {
   @override
   _HomeViewState createState() => _HomeViewState();
@@ -9,7 +11,7 @@ class _HomeViewState extends State<HomeView> {
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static const List<Widget> _widgetOptions = <Widget>[
+  static  List<Widget> _widgetOptions = <Widget>[
     Text(
       'Index 0: Home',
       style: optionStyle,
@@ -18,10 +20,7 @@ class _HomeViewState extends State<HomeView> {
       'Index 1: Business',
       style: optionStyle,
     ),
-    Text(
-      'Index 2: School',
-      style: optionStyle,
-    ),
+   RenterInformation(),
   ];
 
   void _onItemTapped(int index) {

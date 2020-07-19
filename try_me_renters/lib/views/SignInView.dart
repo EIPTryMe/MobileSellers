@@ -54,7 +54,7 @@ class _SignInViewState extends State<SignInView> {
       child: Form(
         key: _formKeyPassword,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             TextFormField(
               focusNode: myFocusNodePassword,

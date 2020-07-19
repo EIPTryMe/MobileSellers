@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'package:trymerenters/widgets/ListProducts.dart';
+
+
 class HomeView extends StatefulWidget {
   @override
   _HomeViewState createState() => _HomeViewState();
@@ -9,11 +12,8 @@ class _HomeViewState extends State<HomeView> {
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Index 0: Home',
-      style: optionStyle,
-    ),
+  static List<Widget> _widgetOptions = <Widget>[
+    ListProducts(),
     Text(
       'Index 1: Business',
       style: optionStyle,
@@ -37,6 +37,9 @@ class _HomeViewState extends State<HomeView> {
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),

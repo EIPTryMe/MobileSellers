@@ -8,6 +8,7 @@ import 'package:trymerenters/Router.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  //SystemChrome.setEnabledSystemUIOverlays([]);
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarColor: Colors.transparent, // status bar color
   ));
@@ -16,7 +17,7 @@ void main() {
     child: CacheProvider(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        initialRoute: 'signIn',
+        initialRoute: 'home',
         onGenerateRoute: FluroRouter.router.generator,
       ),
     ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:trymerenters/widgets/ListProducts.dart';
-
+import 'package:trymerenters/widgets/RenterInformation.dart';
 
 class HomeView extends StatefulWidget {
   @override
@@ -18,10 +18,7 @@ class _HomeViewState extends State<HomeView> {
       'Index 1: Business',
       style: optionStyle,
     ),
-    Text(
-      'Index 2: School',
-      style: optionStyle,
-    ),
+   RenterInformation(),
   ];
 
   void _onItemTapped(int index) {

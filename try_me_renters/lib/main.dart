@@ -17,7 +17,7 @@ void main() {
     child: CacheProvider(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        initialRoute: 'home',
+        initialRoute: 'signIn',
         onGenerateRoute: FluroRouter.router.generator,
       ),
     ),

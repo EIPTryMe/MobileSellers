@@ -8,7 +8,7 @@ import 'package:trymerenters/Router.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  //SystemChrome.setEnabledSystemUIOverlays([]);
+  SystemChrome.setEnabledSystemUIOverlays([]);
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarColor: Colors.transparent, // status bar color
   ));

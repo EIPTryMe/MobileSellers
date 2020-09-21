@@ -15,7 +15,7 @@ class _HomeViewState extends State<HomeView> {
   static List<Widget> _widgetOptions = <Widget>[
     ListProducts(),
     Orders(),
-    RenterInformation(),
+    CompanyInformation(),
   ];
 
   void _onItemTapped(int index) {

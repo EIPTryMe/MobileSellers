@@ -1,34 +1,18 @@
 import 'package:flutter/material.dart';
 
 import 'package:trymerenters/Globals.dart';
+import 'package:trymerenters/Request.dart';
 
-class RenterInformation extends StatefulWidget {
+class CompanyInformation extends StatefulWidget {
   @override
-  _RenterInformationState createState() => _RenterInformationState();
+  _CompanyInformationState createState() => _CompanyInformationState();
 }
 
-String modifyPhoneNumber(String phoneNumber) {
-  String tmp = phoneNumber;
-  phoneNumber =
-      tmp.replaceAllMapped(RegExp(r".{2}"), (match) => "${match.group(0)} ");
-  phoneNumber = phoneNumber.substring(0, phoneNumber.length - 1);
-  return (phoneNumber);
-}
-
-class _RenterInformationState extends State<RenterInformation> {
+class _CompanyInformationState extends State<CompanyInformation> {
   var edit = new List(7);
   double _widthScreen;
   double _heightScreen;
   bool _infoValid;
-
-  FocusNode myFocusNodeName = new FocusNode();
-  FocusNode myFocusNodeEmail = new FocusNode();
-  FocusNode myFocusNodePhone = new FocusNode();
-  FocusNode myFocusNodeAddress = new FocusNode();
-  FocusNode myFocusNodeSIRET = new FocusNode();
-  FocusNode myFocusNodeSIREN = new FocusNode();
-
-
   final _formKey = GlobalKey<FormState>();
 
   String buttonText = 'Sauvegarder';
@@ -46,13 +30,23 @@ class _RenterInformationState extends State<RenterInformation> {
     }
   }
 
+  /*String modifySiretSiren(String siretSiren) {
+  String tmp = siretSiren;
+  siretSiren = tmp.replaceAllMapped(RegExp(r".{3}"), (match) => "${match.group(0)} ");
+  var parts = siretSiren.split(" ");
+  siretSiren = parts[0] + ' ' + parts[1] + ' ' + parts[2] + ' ' + parts[3] + parts[4];
+  return (siretSiren);
+  }*/
+
   Widget _presentation(double widthScreen) {
     return Row(
       children: <Widget>[
         Padding(
           padding: EdgeInsets.all(widthScreen / 20),
           child: CircleAvatar(
-            // backgroundImage: NetworkImage(user.pathToAvatar),
+            backgroundImage: company.pathToAvatar != null
+                ? NetworkImage(company.pathToAvatar)
+                : AssetImage("assets/company_logo_temp.jpg"),
             radius: widthScreen / 10,
           ),
         ),
@@ -62,26 +56,25 @@ class _RenterInformationState extends State<RenterInformation> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 Container(
-                  //get first name here
-                  child: Text(
-                    renter.name != null ? renter.name : "Pas de nom défini",
-                    style: TextStyle(
-                      letterSpacing: 2.0,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10.0),
-                Container(
-                  //get last name here
-                  child: Text(
-                    renter.email != null ? renter.email : "Pas d'email défini",
-                    style: TextStyle(
-                      letterSpacing: 2.0,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
+                    //get name here
+                    child: (() {
+                  if (company.name != null && company.name != "")
+                    return (Text(
+                      company.name,
+                      style: TextStyle(
+                        letterSpacing: 2.0,
+                        color: Colors.black,
+                      ),
+                    ));
+                  else
+                    return (Text(
+                      "Pas de nom défini",
+                      style: TextStyle(
+                        letterSpacing: 2.0,
+                        color: Colors.orange,
+                      ),
+                    ));
+                }())),
               ],
             ),
           ),
@@ -90,7 +83,7 @@ class _RenterInformationState extends State<RenterInformation> {
     );
   }
 
-  Widget _renterName(var edit, String title) {
+  Widget _personalFirstName(var edit) {
     if (edit[1]) {
       return Container(
         margin: EdgeInsets.only(left: 10.0, right: 10.0),
@@ -112,24 +105,24 @@ class _RenterInformationState extends State<RenterInformation> {
                     child: Form(
                       key: _formKey,
                       child: TextFormField(
-                        initialValue: renter.name,
+                        initialValue: company.name != null ? company.name : "",
                         decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                    color: Color(0xff1f2c76), width: 2.0)),
-                            labelText: title,
-                            labelStyle: TextStyle(
-                                color: myFocusNodeName.hasFocus
-                                    ? Color(0xfffca311)
-                                    : Colors.grey[800])),
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          labelText: "Entrer votre nom",
+                        ),
                         keyboardType: TextInputType.text,
                         validator: (value) {
                           _infoValid =
-                              RegExp(r"^[a-zA-Z0-9-]{2,16}$").hasMatch(value);
+                              RegExp(r"^[a-zA-Z-]{2,16}$").hasMatch(value);
                           if (value.isEmpty) {
-                            return "Vous n\'avez pas rentré le nom de votre entreprise";
+                            tmp = null;
+                            return null;
                           } else if (!_infoValid) {
-                            return "Le nom de votre entreprise est incorrect";
+                            return "Le format de votre nom est incorrect";
                           }
                           tmp = value;
                           return null;
@@ -147,9 +140,7 @@ class _RenterInformationState extends State<RenterInformation> {
                     edit[1] = false;
                     edit[0] = false;
                     buttonText = 'Sauvegarder';
-                    print(tmp);
-                    renter.name = tmp;
-                    print(renter.name);
+                    company.name = tmp;
                   }
                 });
               },
@@ -167,13 +158,24 @@ class _RenterInformationState extends State<RenterInformation> {
         child: Row(
           children: <Widget>[
             Expanded(
-              child: Text(
-                renter.name != null ? renter.name : "Pas de nom défini",
-                style: TextStyle(
-                  color: Colors.black,
-                ),
-              ),
-            ),
+                child: (() {
+              if (company.name != null && company.name != "")
+                return (Text(
+                  company.name,
+                  style: TextStyle(
+                    letterSpacing: 2.0,
+                    color: Colors.black,
+                  ),
+                ));
+              else
+                return (Text(
+                  "Pas de nom défini",
+                  style: TextStyle(
+                    letterSpacing: 2.0,
+                    color: Colors.orange,
+                  ),
+                ));
+            }())),
             IconButton(
               onPressed: () {
                 setState(() {
@@ -195,7 +197,7 @@ class _RenterInformationState extends State<RenterInformation> {
     }
   }
 
-  Widget _renterEmail(var edit, String title) {
+  Widget _personalAddress(var edit) {
     if (edit[2]) {
       return Container(
         margin: EdgeInsets.only(left: 10.0, right: 10.0),
@@ -217,25 +219,25 @@ class _RenterInformationState extends State<RenterInformation> {
                     child: Form(
                       key: _formKey,
                       child: TextFormField(
-                        initialValue: renter.email,
+                        initialValue:
+                            company.address != null ? company.address : "",
                         decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                    color: Color(0xff1f2c76), width: 2.0)),
-                            labelText: title,
-                            labelStyle: TextStyle(
-                                color: myFocusNodeName.hasFocus
-                                    ? Color(0xfffca311)
-                                    : Colors.grey[800])),
-                        keyboardType: TextInputType.emailAddress,
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          labelText: "Entrer votre adresse",
+                        ),
+                        keyboardType: TextInputType.text,
                         validator: (value) {
-                          _infoValid = RegExp(
-                                  r"^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$")
+                          _infoValid = RegExp(r"^[a-zA-Z0-9-', ]{2,100}$")
                               .hasMatch(value);
                           if (value.isEmpty) {
-                            return "Vous n\'avez pas rentrer l\'email de la entreprise";
+                            tmp = null;
+                            return null;
                           } else if (!_infoValid) {
-                            return "L\'email de votre entreprise est incorrect";
+                            return "Le format de votre adresse est incorrect";
                           }
                           tmp = value;
                           return null;
@@ -253,7 +255,7 @@ class _RenterInformationState extends State<RenterInformation> {
                     edit[2] = false;
                     edit[0] = false;
                     buttonText = 'Sauvegarder';
-                    renter.email = tmp;
+                    company.address = tmp;
                   }
                 });
               },
@@ -271,13 +273,24 @@ class _RenterInformationState extends State<RenterInformation> {
         child: Row(
           children: <Widget>[
             Expanded(
-              child: Text(
-                renter.email != null ? renter.email : "Pas d'email défini",
-                style: TextStyle(
-                  color: Colors.black,
-                ),
-              ),
-            ),
+                child: (() {
+              if (company.address != null && company.address != "")
+                return (Text(
+                  company.address,
+                  style: TextStyle(
+                    letterSpacing: 2.0,
+                    color: Colors.black,
+                  ),
+                ));
+              else
+                return (Text(
+                  "Pas d'adresse définie",
+                  style: TextStyle(
+                    letterSpacing: 2.0,
+                    color: Colors.orange,
+                  ),
+                ));
+            }())),
             IconButton(
               onPressed: () {
                 setState(() {
@@ -299,7 +312,7 @@ class _RenterInformationState extends State<RenterInformation> {
     }
   }
 
-  Widget _renterPhoneNumber(var edit, String title) {
+  Widget _personalPhoneNumber(var edit) {
     if (edit[3]) {
       return Container(
         margin: EdgeInsets.only(left: 10.0, right: 10.0),
@@ -321,24 +334,26 @@ class _RenterInformationState extends State<RenterInformation> {
                     child: Form(
                       key: _formKey,
                       child: TextFormField(
-                        initialValue: renter.phoneNumber,
+                        initialValue: company.phoneNumber != null
+                            ? company.phoneNumber
+                            : "",
                         decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                    color: Color(0xff1f2c76), width: 2.0)),
-                            labelText: title,
-                            labelStyle: TextStyle(
-                                color: myFocusNodePhone.hasFocus
-                                    ? Color(0xfffca311)
-                                    : Colors.grey[800])),
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          labelText: "Entrer votre numéro de téléphone",
+                        ),
                         keyboardType: TextInputType.phone,
                         validator: (value) {
                           _infoValid =
-                              RegExp(r"^[0-9]{10,10}$").hasMatch(value);
+                              RegExp(r"^[0-9 ]{10,10}$").hasMatch(value);
                           if (value.isEmpty) {
-                            return "Vous n\'avez pas rentré le numéro de téléphone de votre entreprise";
+                            tmp = null;
+                            return null;
                           } else if (!_infoValid) {
-                            return "Le numéro de téléphone de votre entreprise est incorrect";
+                            return "Le format de votre numéro de téléphone est incorrect";
                           }
                           tmp = value;
                           return null;
@@ -356,8 +371,8 @@ class _RenterInformationState extends State<RenterInformation> {
                     edit[3] = false;
                     edit[0] = false;
                     buttonText = 'Sauvegarder';
-                    tmp = modifyPhoneNumber(tmp);
-                    renter.phoneNumber = tmp;
+                    //tmp = modifyPhoneNumber(tmp);
+                    company.phoneNumber = tmp;
                   }
                 });
               },
@@ -375,15 +390,24 @@ class _RenterInformationState extends State<RenterInformation> {
         child: Row(
           children: <Widget>[
             Expanded(
-              child: Text(
-                renter.phoneNumber != null
-                    ? renter.phoneNumber
-                    : "Pas de numéro de téléphone défini",
-                style: TextStyle(
-                  color: Colors.black,
-                ),
-              ),
-            ),
+                child: (() {
+              if (company.phoneNumber != null && company.phoneNumber != "")
+                return (Text(
+                  company.phoneNumber,
+                  style: TextStyle(
+                    letterSpacing: 2.0,
+                    color: Colors.black,
+                  ),
+                ));
+              else
+                return (Text(
+                  "Pas de numéro de téléphone défini",
+                  style: TextStyle(
+                    letterSpacing: 2.0,
+                    color: Colors.orange,
+                  ),
+                ));
+            }())),
             IconButton(
               onPressed: () {
                 setState(() {
@@ -405,7 +429,7 @@ class _RenterInformationState extends State<RenterInformation> {
     }
   }
 
-  Widget _renterAddress(var edit, String title) {
+  Widget _personalEmail(var edit) {
     if (edit[4]) {
       return Container(
         margin: EdgeInsets.only(left: 10.0, right: 10.0),
@@ -427,24 +451,26 @@ class _RenterInformationState extends State<RenterInformation> {
                     child: Form(
                       key: _formKey,
                       child: TextFormField(
-                        initialValue: renter.address,
+                        initialValue:
+                            company.email != null ? company.email : "",
                         decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                    color: Color(0xff1f2c76), width: 2.0)),
-                            labelText: title,
-                            labelStyle: TextStyle(
-                                color: myFocusNodeAddress.hasFocus
-                                    ? Color(0xfffca311)
-                                    : Colors.grey[800])),
-                        keyboardType: TextInputType.text,
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          labelText: "Entre votre email",
+                        ),
+                        keyboardType: TextInputType.emailAddress,
                         validator: (value) {
-                          _infoValid = RegExp(r"^[a-zA-Z0-9-', ]{2,100}$")
+                          _infoValid = RegExp(
+                                  r"^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$")
                               .hasMatch(value);
                           if (value.isEmpty) {
-                            return "Vous n\'avez pas rentré l\'adresse de votre entreprise";
+                            tmp = null;
+                            return null;
                           } else if (!_infoValid) {
-                            return "L\'adresse de votre entreprise est incorrect";
+                            return "Le format de votre email est incorrect";
                           }
                           tmp = value;
                           return null;
@@ -462,7 +488,7 @@ class _RenterInformationState extends State<RenterInformation> {
                     edit[4] = false;
                     edit[0] = false;
                     buttonText = 'Sauvegarder';
-                    renter.address = tmp;
+                    company.email = tmp;
                   }
                 });
               },
@@ -480,15 +506,24 @@ class _RenterInformationState extends State<RenterInformation> {
         child: Row(
           children: <Widget>[
             Expanded(
-              child: Text(
-                renter.address != null
-                    ? renter.address
-                    : "Pas d'adresse définie",
-                style: TextStyle(
-                  color: Colors.black,
-                ),
-              ),
-            ),
+                child: (() {
+              if (company.email != null && company.email != "")
+                return (Text(
+                  company.email,
+                  style: TextStyle(
+                    letterSpacing: 2.0,
+                    color: Colors.black,
+                  ),
+                ));
+              else
+                return (Text(
+                  "Pas d'adresse mail définie",
+                  style: TextStyle(
+                    letterSpacing: 2.0,
+                    color: Colors.orange,
+                  ),
+                ));
+            }())),
             IconButton(
               onPressed: () {
                 setState(() {
@@ -510,111 +545,7 @@ class _RenterInformationState extends State<RenterInformation> {
     }
   }
 
-  Widget _renterSiret(var edit, String title) {
-    if (edit[5]) {
-      return Container(
-        margin: EdgeInsets.only(left: 10.0, right: 10.0),
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: Form(
-                child: Theme(
-                  data: ThemeData(
-                    primarySwatch: Colors.orange,
-                    inputDecorationTheme: InputDecorationTheme(
-                      labelStyle: TextStyle(
-                        color: Color(0xfff99e38),
-                        fontSize: 10.0,
-                      ),
-                    ),
-                  ),
-                  child: Container(
-                    child: Form(
-                      key: _formKey,
-                      child: TextFormField(
-                        initialValue: renter.siret,
-                        decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                    color: Color(0xff1f2c76), width: 2.0)),
-                            labelText: title,
-                            labelStyle: TextStyle(
-                                color: myFocusNodeSIRET.hasFocus
-                                    ? Color(0xfffca311)
-                                    : Colors.grey[800])),
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (value) {
-                          _infoValid =
-                              RegExp(r"^[0-9]{14,14}$").hasMatch(value);
-                          if (value.isEmpty) {
-                            return "Vous n\'avez pas rentré le SIRET de votre entreprise";
-                          } else if (!_infoValid) {
-                            return "Le format du SIRET de votre entreprise est incorrect";
-                          }
-                          tmp = value;
-                          return null;
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  if (_formKey.currentState.validate()) {
-                    edit[5] = false;
-                    edit[0] = false;
-                    buttonText = 'Sauvegarder';
-                    //tmp = modifySiretSiren(tmp);
-                    renter.siret = tmp;
-                  }
-                });
-              },
-              icon: Icon(
-                Icons.check,
-                color: Colors.black,
-              ),
-            )
-          ],
-        ),
-      );
-    } else {
-      return Container(
-        margin: EdgeInsets.only(left: 10.0, right: 10.0),
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: Text(
-                renter.siret != null ? renter.siret : "Pas de siret défini",
-                style: TextStyle(
-                  color: Colors.black,
-                ),
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  if (!edit[0]) {
-                    edit[5] = true;
-                    edit[0] = true;
-                    buttonText = '';
-                  }
-                });
-              },
-              icon: Icon(
-                Icons.edit,
-                color: Colors.black,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-  }
-
-  Widget _renterSiren(var edit, String title) {
+  Widget _siren(var edit) {
     if (edit[6]) {
       return Container(
         margin: EdgeInsets.only(left: 10.0, right: 10.0),
@@ -636,21 +567,25 @@ class _RenterInformationState extends State<RenterInformation> {
                     child: Form(
                       key: _formKey,
                       child: TextFormField(
-                        initialValue: renter.siren,
+                        initialValue:
+                            company.siren != null ? company.siren : "",
                         decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                    color: Color(0xff1f2c76), width: 2.0)),
-                            labelText: title,
-                            labelStyle: TextStyle(
-                                color: myFocusNodeSIREN.hasFocus
-                                    ? Color(0xfffca311)
-                                    : Colors.grey[800])),
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          labelText: "Entrer le SIREN de votre entreprise",
+                          labelStyle: TextStyle(
+                            fontSize: 15.0,
+                          ),
+                        ),
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
                           _infoValid = RegExp(r"^[0-9]{9,9}$").hasMatch(value);
                           if (value.isEmpty) {
-                            return "Vous n\'avez pas rentré le SIREN de votre entreprise";
+                            tmp = null;
+                            return null;
                           } else if (!_infoValid) {
                             return "Le format du SIREN de votre entreprise est incorrect";
                           }
@@ -671,7 +606,7 @@ class _RenterInformationState extends State<RenterInformation> {
                     edit[0] = false;
                     buttonText = 'Sauvegarder';
                     //tmp = modifySiretSiren(tmp);
-                    renter.siren = tmp;
+                    company.siren = tmp;
                   }
                 });
               },
@@ -689,13 +624,24 @@ class _RenterInformationState extends State<RenterInformation> {
         child: Row(
           children: <Widget>[
             Expanded(
-              child: Text(
-                renter.siren != null ? renter.siren : "Pas de siren défini",
-                style: TextStyle(
-                  color: Colors.black,
-                ),
-              ),
-            ),
+                child: (() {
+              if (company.siren != null && company.siren != "")
+                return (Text(
+                  company.siren,
+                  style: TextStyle(
+                    letterSpacing: 2.0,
+                    color: Colors.black,
+                  ),
+                ));
+              else
+                return (Text(
+                  "Pas de SIREN défini",
+                  style: TextStyle(
+                    letterSpacing: 2.0,
+                    color: Colors.orange,
+                  ),
+                ));
+            }())),
             IconButton(
               onPressed: () {
                 setState(() {
@@ -717,6 +663,136 @@ class _RenterInformationState extends State<RenterInformation> {
     }
   }
 
+  Widget _siret(var edit) {
+    if (edit[5]) {
+      return Container(
+        margin: EdgeInsets.only(left: 10.0, right: 10.0),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Form(
+                child: Theme(
+                  data: ThemeData(
+                    primarySwatch: Colors.orange,
+                    inputDecorationTheme: InputDecorationTheme(
+                      labelStyle: TextStyle(
+                        color: Color(0xfff99e38),
+                        fontSize: 10.0,
+                      ),
+                    ),
+                  ),
+                  child: Container(
+                    child: Form(
+                      key: _formKey,
+                      child: TextFormField(
+                        initialValue:
+                            company.siret != null ? company.siret : "",
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          labelText: "Entrer le SIRET de votre entreprise",
+                          labelStyle: TextStyle(
+                            fontSize: 15.0,
+                          ),
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          _infoValid =
+                              RegExp(r"^[0-9]{14,14}$").hasMatch(value);
+                          if (value.isEmpty) {
+                            tmp = null;
+                            return null;
+                          } else if (!_infoValid) {
+                            return "Le format du SIRET de votre entreprise est incorrect";
+                          }
+                          tmp = value;
+                          return null;
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  if (_formKey.currentState.validate()) {
+                    edit[5] = false;
+                    edit[0] = false;
+                    buttonText = 'Sauvegarder';
+                    //tmp = modifySiretSiren(tmp);
+                    company.siret = tmp;
+                  }
+                });
+              },
+              icon: Icon(
+                Icons.check,
+                color: Colors.black,
+              ),
+            )
+          ],
+        ),
+      );
+    } else {
+      return Container(
+        margin: EdgeInsets.only(left: 10.0, right: 10.0),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+                child: (() {
+              if (company.siret != null && company.siret != "")
+                return (Text(
+                  company.siret,
+                  style: TextStyle(
+                    letterSpacing: 2.0,
+                    color: Colors.black,
+                  ),
+                ));
+              else
+                return (Text(
+                  "Pas de SIRET défini",
+                  style: TextStyle(
+                    letterSpacing: 2.0,
+                    color: Colors.orange,
+                  ),
+                ));
+            }())),
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  if (!edit[0]) {
+                    edit[5] = true;
+                    edit[0] = true;
+                    buttonText = '';
+                  }
+                });
+              },
+              icon: Icon(
+                Icons.edit,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  Widget _myDivider() {
+    return Container(
+      margin:
+          EdgeInsets.only(left: _widthScreen / 10, right: _widthScreen / 10),
+      child: Divider(
+        height: 1,
+        color: Colors.black,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     double _height = MediaQuery.of(context).size.height;
@@ -724,27 +800,38 @@ class _RenterInformationState extends State<RenterInformation> {
 
     _heightScreen = (_height > _width) ? _height : _width;
     _widthScreen = (_height > _width) ? _width : _height;
-    return Container(
-      child: SingleChildScrollView(
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Informations de l\'entreprise'),
+        centerTitle: true,
+        backgroundColor: Color(0xff1F2C47),
+      ),
+      body: SingleChildScrollView(
         child: Container(
           height: _heightScreen * 0.85,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               _presentation(_widthScreen),
-              _renterName(edit, "Nom"),
-              _renterEmail(edit, "Email"),
-              _renterPhoneNumber(edit, "Numéro de téléphone"),
-              _renterAddress(edit, "Adresse"),
-              _renterSiret(edit, "SIRET"),
-              _renterSiren(edit, "SIREN"),
+              _myDivider(),
+              _personalFirstName(edit),
+              _myDivider(),
+              _personalAddress(edit),
+              _myDivider(),
+              _personalPhoneNumber(edit),
+              _myDivider(),
+              _personalEmail(edit),
+              _myDivider(),
+              _siret(edit),
+              _myDivider(),
+              _siren(edit),
               RaisedButton(
                 onPressed: () {
                   setState(() {
                     if (!edit[0]) {
-                      //   Request.modifyrenter().whenComplete(() => Navigator.pushNamed(context, "renterHome"));
-                      Navigator.pushNamedAndRemoveUntil(
-                          context, 'home', ModalRoute.withName('/'));
+                      Request.modifyCompany().whenComplete(
+                          () => Navigator.pushNamed(context, "home"));
                     }
                   });
                 },

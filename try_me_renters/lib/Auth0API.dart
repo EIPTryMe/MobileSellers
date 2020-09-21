@@ -10,9 +10,14 @@ class Auth0API {
 
   static Future<bool> login(String email, String password) async {
     global.auth0User = global.Auth0User();
-    global.renter = global.Renter();
+    global.user = global.User();
+    global.company = global.Company();
     try {
-      var response = await auth0.auth.passwordRealm({'username': email, 'password': password, 'realm': 'Username-Password-Authentication'});
+      var response = await auth0.auth.passwordRealm({
+        'username': email,
+        'password': password,
+        'realm': 'Username-Password-Authentication'
+      });
 
       print('''
     \nAccess Token: ${response['access_token']}
@@ -27,7 +32,8 @@ class Auth0API {
 
   static Future<bool> userInfo(String bearer) async {
     try {
-      var authClient = Auth0Auth(auth0.auth.clientId, auth0.auth.client.baseUrl, bearer: bearer);
+      var authClient = Auth0Auth(auth0.auth.clientId, auth0.auth.client.baseUrl,
+          bearer: bearer);
       var info = await authClient.getUserInfo();
 
       global.auth0User.uid = info['sub'];
@@ -36,8 +42,9 @@ class Auth0API {
       global.auth0User.email = info['email'];
       global.auth0User.isEmailVerified = info['email_verified'];
 
+
       String buffer = '';
-      info.forEach((k, v) => buffer = '$buffer\n$k: $v');
+      await info.forEach((k, v) => buffer = '$buffer\n$k: $v');
       print(buffer);
 
       return (true);

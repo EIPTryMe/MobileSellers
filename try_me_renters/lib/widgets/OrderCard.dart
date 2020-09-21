@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:trymerenters/Globals.dart';
 import 'package:trymerenters/widgets/ProductCard.dart';
+
+import 'package:trymerenters/Globals.dart';
 
 class OrderCard extends StatelessWidget {
   OrderCard({this.order});

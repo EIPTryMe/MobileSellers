@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:trymerenters/Globals.dart';
 import 'package:trymerenters/widgets/OrderCard.dart';
+
+import 'package:trymerenters/Globals.dart';
+import 'package:trymerenters/Request.dart';
 
 class Orders extends StatefulWidget {
   @override
@@ -9,12 +11,19 @@ class Orders extends StatefulWidget {
 }
 
 class _OrdersState extends State<Orders> {
-  List<Order> orders = [
-    Order(
-        total: 398,
-        products: [Product(name: "iPhone", pricePerMonth: 50), Product(name: "Table", pricePerMonth: 26), Product(name: "Lapin", pricePerMonth: 2)]),
+  List<Order> orders = List();
 
-  ];
+  void getData() async {
+    Request.getOrders(company.id).then((value) => setState(() {
+          orders = value;
+        }));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,3 +38,17 @@ class _OrdersState extends State<Orders> {
     );
   }
 }
+/*
+ query MyQuery {
+  order_item(where: {product: {company_id: {_eq: 43}}}, order_by: {created_at: desc}) {
+    product {
+      id
+      name
+      price_per_month
+      picture {
+        url
+      }
+    }
+  }
+}
+*/

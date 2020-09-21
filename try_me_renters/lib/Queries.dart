@@ -40,7 +40,7 @@ class QueryParse {
     return (product);
   }
 
-  static Product getProductHome(Map result) {
+  static Product getProductMin(Map result) {
     Product product = Product();
     product.id = result['id'];
     product.name = result['name'];
@@ -58,6 +58,23 @@ class QueryParse {
       product.pictures.add(result['picture']['url']);
     }
     return (product);
+  }
+
+  static Order getOrder(Map result) {
+    Order order = Order();
+    List<Product> products = List();
+    double total = 0;
+
+    order.id = result['id'];
+    order.status = result['order_statuses'][0]['status'];
+
+    (result['order_items'] as List).forEach((element) {
+      products.add(getProductMin(element['product']));
+      total += products.last.pricePerMonth;
+    });
+    order.products = products;
+    order.total = total;
+    return (order);
   }
 }
 
@@ -92,6 +109,22 @@ class Mutations {
       '''
   mutation {
     update_product(_set: {name: "$title", brand: "$brand", price_per_month: "$monthPrice", price_per_week: "$weekPrice", price_per_day: "$dayPrice", stock: $stock, description: "$description"}, where: {id: {_eq: $id}}) {
+      affected_rows
+    }
+  }
+  ''';
+
+  static String deleteProductSpecifications(int id) => '''
+  mutation {
+    delete_product_specifications(where: {product_id: {_eq: $id}}) {
+      affected_rows
+    }
+  }
+  ''';
+
+  static String insertProductSpecification(int id, String spec) => '''
+  mutation {
+    insert_product_specifications(objects: {product_id: $id, name: "$spec"}) {
       affected_rows
     }
   }
@@ -152,11 +185,11 @@ class Queries {
   }
   ''';
 
-  static String orders(String status) => '''
-  {
-    order(where: {order_statuses: {status: {_eq: "$status"}}, user_uid: {_eq: "${auth0User.uid}"}}) {
-      order_items {
-         product {
+  static String orders(int id) => '''
+  query MyQuery {
+    order(where: {order_items: {product: {company_id: {_eq: $id}}}}, order_by: {created_at: desc}) {
+      order_items(where: {product: {company_id: {_eq: $id}}}) {
+        product {
           id
           name
           price_per_month
@@ -164,31 +197,12 @@ class Queries {
             url
           }
         }
-        price
       }
       id
-    }
-  }
-  ''';
-
-  static String ordersAll() => '''
-  {
-    order(where: {user_uid: {_eq: "${auth0User.uid}"}}, order_by: {created_at: desc}) {
-      order_items {
-         product {
-          id
-          name
-          price_per_month
-          picture {
-            url
-          }
-        }
-        price
-      }
       order_statuses {
         status
       }
-      id
+      created_at
     }
   }
   ''';

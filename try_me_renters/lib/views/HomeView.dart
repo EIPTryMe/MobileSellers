@@ -40,7 +40,7 @@ class _HomeViewState extends State<HomeView> {
             title: Text('Home'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.business),
+            icon: Icon(Icons.assignment),
             title: Text('Business'),
           ),
           BottomNavigationBarItem(

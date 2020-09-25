@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:trymerenters/Dialogs.dart';
 import 'package:trymerenters/Globals.dart';
 import 'package:trymerenters/Request.dart';
 
@@ -22,6 +23,15 @@ class _CompanyInformationState extends State<CompanyInformation> {
   void initState() {
     initBool(edit);
     super.initState();
+  }
+
+  void disconnect(bool _yes, BuildContext context) {
+    if (_yes) {
+      auth0User = Auth0User();
+      user = User();
+      company = Company();
+      Navigator.pushNamedAndRemoveUntil(context, 'signIn', ModalRoute.withName('/'));
+    }
   }
 
   void initBool(var list) {
@@ -826,22 +836,42 @@ class _CompanyInformationState extends State<CompanyInformation> {
               _siret(edit),
               _myDivider(),
               _siren(edit),
-              RaisedButton(
-                onPressed: () {
-                  setState(() {
-                    if (!edit[0]) {
-                      Request.modifyCompany().whenComplete(
-                          () => Navigator.pushNamed(context, "home"));
-                    }
-                  });
-                },
-                child: Text(
-                  buttonText,
-                  style: TextStyle(
-                    color: Colors.white,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  RaisedButton(
+                    onPressed: () {
+                      setState(() {
+                        if (!edit[0]) {
+                          Request.modifyCompany().whenComplete(
+                              () => Navigator.pushNamed(context, "home"));
+                        }
+                      });
+                    },
+                    child: Text(
+                      buttonText,
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                    color: Color(0xff58c24c),
                   ),
-                ),
-                color: Color(0xff58c24c),
+                  RaisedButton(
+                    onPressed: () async {
+                      final bool _logout = await LogOut().confirm(context);
+                      if (_logout != null) {
+                        disconnect(_logout, context);
+                      }
+                    },
+                    child: Text(
+                      "Déconnexion",
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                    color: Colors.red,
+                  ),
+                ],
               ),
             ],
           ),

@@ -1,5 +1,7 @@
 import 'package:trymerenters/Globals.dart';
 
+enum productInfo_e { CARD }
+
 class QueryParse {
   static void getUser(Map result) {
     user.companyId = result['company_id'];
@@ -16,11 +18,12 @@ class QueryParse {
     company.pathToAvatar = auth0User.picture;
   }
 
-  static Product getProduct(Map result) {
+  static Product getProduct(Map result, [productInfo_e productInfo]) {
     Product product = Product();
     product.id = result['id'];
     product.name = result['name'];
     product.brand = result['brand'];
+    product.stock = result['stock'];
     product.pricePerDay = result['price_per_day'] != null
         ? result['price_per_day'].toDouble()
         : null;
@@ -31,28 +34,19 @@ class QueryParse {
         ? result['price_per_month'].toDouble()
         : null;
     product.stock = result['stock'];
-    product.description = result['description'];
-    product.specifications = result['product_specifications'];
-    if (result['picture'] != null) {
-      product.pictures = List();
-      product.pictures.add(result['picture']['url']);
+    if (productInfo != productInfo_e.CARD) {
+      product.description = result['description'];
+      product.specifications = result['product_specifications'];
     }
-    return (product);
-  }
-
-  static Product getProductMin(Map result) {
-    Product product = Product();
-    product.id = result['id'];
-    product.name = result['name'];
-    product.pricePerDay = result['price_per_day'] != null
-        ? result['price_per_day'].toDouble()
-        : null;
-    product.pricePerWeek = result['price_per_week'] != null
-        ? result['price_per_week'].toDouble()
-        : null;
-    product.pricePerMonth = result['price_per_month'] != null
-        ? result['price_per_month'].toDouble()
-        : null;
+    product.reviews = Reviews(reviews: List());
+    (result['reviews'] as List).forEach((element) {
+      product.reviews.reviews.add(productInfo != productInfo_e.CARD
+          ? Review(
+          score: element['score'].toDouble(),
+          description: element['description'])
+          : Review(score: element['score'].toDouble()));
+    });
+    product.reviews.computeAverageRating();
     if (result['picture'] != null) {
       product.pictures = List();
       product.pictures.add(result['picture']['url']);
@@ -69,7 +63,7 @@ class QueryParse {
     order.status = result['order_statuses'][0]['status'];
 
     (result['order_items'] as List).forEach((element) {
-      products.add(getProductMin(element['product']));
+      products.add(getProduct(element['product']));
       total += products.last.pricePerMonth;
     });
     order.products = products;
@@ -149,20 +143,9 @@ class Queries {
       picture {
         url
       }
-    }
-  }
-  ''';
-
-  static String products(String sort) => '''
-  query {
-    product($sort) {
-      name
-      id
-      price_per_week
-      price_per_month
-      price_per_day
-      picture {
-        url
+      reviews {
+        description
+        score
       }
     }
   }
@@ -172,29 +155,38 @@ class Queries {
   query {
     company(where: {id: {_eq: $id}}) {
       products($sort) {
-        name
         id
-        price_per_week
+        name
+        brand
         price_per_month
-        price_per_day
+        stock
         picture {
           url
+        }
+        reviews {
+          score
         }
       }
     }
   }
   ''';
 
-  static String orders(int id) => '''
-  query MyQuery {
-    order(where: {order_items: {product: {company_id: {_eq: $id}}}}, order_by: {created_at: desc}) {
+  static String orders(int id, String status) => '''
+  query {
+    order(where: {order_items: {product: {company_id: {_eq: $id}}}'''+ (status.isEmpty ? "" : ''', order_statuses: {status: {_eq: "$status"}}''') + '''}, order_by: {created_at: desc}) {
       order_items(where: {product: {company_id: {_eq: $id}}}) {
         product {
           id
           name
+          brand
           price_per_month
+          stock
           picture {
             url
+          }
+          reviews {
+            description
+            score
           }
         }
       }

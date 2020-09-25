@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'package:trymerenters/widgets/Filter.dart';
-import 'package:trymerenters/widgets/ProductCard.dart';
-
 import 'package:trymerenters/Globals.dart';
 import 'package:trymerenters/Request.dart';
+
+import 'package:trymerenters/widgets/Filter.dart';
+import 'package:trymerenters/widgets/ProductCard.dart';
 
 class ListProducts extends StatefulWidget {
   @override
@@ -13,6 +13,7 @@ class ListProducts extends StatefulWidget {
 
 class _ListProductsState extends State<ListProducts> {
   List<Product> products = List();
+  double averageReviewRating;
 
   void callback(String option) {
     getData(option);
@@ -64,13 +65,19 @@ class _ListProductsState extends State<ListProducts> {
           flex: 15,
           child: ListView(
             children: products
-                .map((product) =>
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
-                  child: ProductCard(
-                    product: product,
+                .map((product) => Column(
+              children: [
+                ProductCard(
+                  product: product,
+                ),
+                SizedBox(
+                  //height: 0.8,
+                  child: Container(
+                    //color: Colors.grey[500],
                   ),
-                ))
+                ),
+              ],
+            ))
                 .toList(),
           ),
         ),

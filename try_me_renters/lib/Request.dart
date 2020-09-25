@@ -17,7 +17,8 @@ class Request {
 
   static Future getCompany() async {
     QueryResult result;
-    QueryOptions queryOption = QueryOptions(documentNode: gql(Queries.company(user.companyId)));
+    QueryOptions queryOption =
+        QueryOptions(documentNode: gql(Queries.company(user.companyId)));
     result = await graphQLConfiguration.clientToQuery.query(queryOption);
     QueryParse.getCompany(result.data['company'][0]);
   }
@@ -65,7 +66,7 @@ class Request {
     result = await graphQLConfiguration.clientToQuery.query(queryOption);
   }
 
-  static Future<List<Product>> getProducts(OrderBy orderBy, bool asc) async {
+  static Future getProducts(OrderBy orderBy, bool asc) async {
     List<Product> products = List();
     String sort = '';
 
@@ -84,16 +85,16 @@ class Request {
     graphQLConfiguration = GraphQLConfiguration();
     result = await graphQLConfiguration.clientToQuery.query(queryOption);
     (result.data['company'][0]['products'] as List).forEach((element) {
-      products.add(QueryParse.getProductMin(element));
+      products.add(QueryParse.getProduct(element, productInfo_e.CARD));
     });
     return (products);
   }
 
-  static Future<List<Order>> getOrders(int id) async {
+  static Future<List<Order>> getOrders(int id, String status) async {
     List<Order> orders = List();
     QueryResult result;
-    QueryOptions queryOption = QueryOptions(
-        documentNode: gql(Queries.orders(id)));
+    QueryOptions queryOption =
+        QueryOptions(documentNode: gql(Queries.orders(id, status)));
     result = await graphQLConfiguration.clientToQuery.query(queryOption);
     (result.data['order'] as List).forEach((element) {
       orders.add(QueryParse.getOrder(element));

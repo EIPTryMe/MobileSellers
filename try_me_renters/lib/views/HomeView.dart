@@ -31,25 +31,23 @@ class _HomeViewState extends State<HomeView> {
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
         type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            title: Text('Home'),
+            title: Text('Acceuil'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.assignment),
-            title: Text('Business'),
+            title: Text('Commandes'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.school),
-            title: Text('School'),
+            icon: Icon(Icons.account_box),
+            title: Text('Mon compte'),
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
+        selectedItemColor: Color(0xff1F2C47),
         onTap: _onItemTapped,
       ),
     );
